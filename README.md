@@ -14,10 +14,14 @@ Pipeline RiskSensor, Pipeline AIM - Attack Surface Management, external partners
 ### 2. Data Sources
 dns, whois, honeypots, threat feeds, certificates, ip addresses, passive recon, active recon, osint
 ### 3. Processing
-
+Consistency, Fidelity, Searchability, Automation Processing, YARA, STIX, TAXII 
 ### 4. Analysis & Production
+Peer review, code review, oversight
 ### 5. Dessimination
-### 6. Feedback            
+Strategic, Operational, Tactical
+### 6. Feedback
+stakeholder feedback, comments, concerns, etc..
 ### 7. Planning & Direction
+Threat Modeling 
 
 
