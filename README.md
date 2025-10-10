@@ -18,3 +18,13 @@ We collect and parse raw threat research from various data points we collect int
 |Data Sources| Type|
 --------------------
 |OSINT|DNS|
+
+
+Latest Release	GitHub version
+CI	
+Gitter	
+Mastodon	
+Twitter	
+Localization	
+Contributors	
+License	
