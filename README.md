@@ -5,7 +5,9 @@ Welcome to Pipeline Horizon Github repository we publish raw indicator findings 
 
 ## This repository will work as our raw data processing unit...
 
-We collect and parse raw threat data from various data points we collect internally and externally for actionable proactive threat-informed defense to our collection database. This will ingest to an undisclosed repo and TIP platforms for further processing analysis & production.
+We collect and parse raw threat research from various data points we collect internally and externally for actionable proactive threat-informed defense to our collection database. This will later ingest to an undisclosed repo and TIP platforms for further processing analysis & production. This will mainly work as a documentation process for our threat researchers who discover significant raw indicators & campaigns but currently don't have time to invest until at a later time...
+
+### How do we provide actionable threat informed defense?
 
 1. Collection 
 2. Data Sources
