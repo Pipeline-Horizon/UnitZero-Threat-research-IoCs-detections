@@ -12,7 +12,7 @@ Welcome to Pipeline Horizon Github repository we publish raw indicator findings 
 ### 1. Collection  
 efewgfwegw
 ### 2. Data Sources
-dns, whois, honeypots, threat feeds, osint
+dns, whois, honeypots, threat feeds, certificates, ip addresses, passive recon, active reconaissance osint
 ### 3. Processing
 ### 4. Analysis & Production
 ### 5. Dessimination
