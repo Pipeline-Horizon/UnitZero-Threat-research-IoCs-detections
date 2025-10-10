@@ -7,7 +7,7 @@ Welcome to Pipeline Horizon Github repository we publish raw indicator findings 
 
 We collect and parse raw threat research from various data points we collect internally and externally for actionable proactive threat-informed defense to our collection database. This will later ingest to an undisclosed repo and TIP platforms for further processing analysis & production. This will mainly work as a documentation process for our threat researchers who discover significant raw indicators & campaigns but currently don't have time to invest until at a later time...
 
-1. Collection      
+1. Collection - dns, whois, honeypots,    
 2. Data Sources
 3. Processing
 4. Analysis & Production
@@ -15,16 +15,5 @@ We collect and parse raw threat research from various data points we collect int
 6. Feedback            
 7. Planning & Direction
 
-|Data Sources| Type|
---------------------
-|OSINT|DNS|
 
 
-Latest Release	GitHub version
-CI	
-Gitter	
-Mastodon	
-Twitter	
-Localization	
-Contributors	
-License	
