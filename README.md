@@ -1,7 +1,14 @@
 # UnitZero - Threat Collection database
 ## "Defending Today, Securing Tomorrow"  
 
-Welcome to Pipeline Horizon Github repository we publish raw indicator findings and campaigns targeting Japan and APAC - Asian Pacific Cyber threat landscape discovered by our threat research team UnitZero. <img width="1920" height="1008" alt="image" src="https://github.com/user-attachments/assets/16c37a09-9c05-48ce-9ba2-2068bbdddffc" />
+Welcome to Pipeline Horizon Github repository we publish raw indicator findings and campaigns targeting Japan and APAC - Asian Pacific Cyber threat landscape discovered by our threat research team UnitZero.
+
+Pipeline is not just a reseller that sells products. We are involved in projects, investigating cyber incidents, and developing our own intelligence technology. Through these efforts, we are strengthening Japan's intelligence infrastructure and ensuring its sustainable growth.
+
+By combining collaboration with world-leading intelligence partners and our own advanced platforms (DatalaiQ, ThreatIDR), we can visualize threats that cannot be detected by traditional defenses alone, leading to actionable countermeasures.
+
+In addition to providing 24/7 monitoring and response services, we are also working with academic institutions to develop the next generation of human resources, thereby strengthening the security infrastructure that supports Japan's society and economy.
+<img width="1920" height="1008" alt="image" src="https://github.com/user-attachments/assets/16c37a09-9c05-48ce-9ba2-2068bbdddffc" />
 
 ## This repository will work as our raw data processing unit...
 
@@ -14,6 +21,8 @@ We collect and parse raw threat research from various data points we collect int
 5. Dessimination
 6. Feedback            
 7. Planning & Direction
+
+8. 
 
 
 
