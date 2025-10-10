@@ -1,4 +1,4 @@
-# UnitZero - Threat Research Indicators & raw findings
+# UnitZero - Threat Collection database & research findings
 ## "Defending Today, Securing Tomorrow"  
 
 Welcome to Pipeline Horizon Github repository we publish raw indicator findings and campaigns targeting Japan and APAC - Asian Pacific Cyber threat landscape discovered by our threat research team UnitZero. <img width="1920" height="1008" alt="image" src="https://github.com/user-attachments/assets/16c37a09-9c05-48ce-9ba2-2068bbdddffc" />
