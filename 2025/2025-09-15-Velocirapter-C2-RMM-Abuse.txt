@@ -1,6 +1,17 @@
 # Velociraptor C2 Incident Response tool abused as an RMM tunneling under Visual Studio Code, detection to this campaign under unsigned Velociraptors, C2 domains, ip address, and the pivotting to unreported trojanized V2.msi installers including several other pirated/trojan Velociraptor programs
 
 
+
+
+
+
+
+
+
+
+
+# Indicators of Compromise
+
 **C2 Domains**
 files.qaubctgg.workers.dev
 velo.qaubctgg.workers.dev
