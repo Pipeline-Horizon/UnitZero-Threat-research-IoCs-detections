@@ -1,17 +1,31 @@
 Date: 2025-10-13
-Title: Chinese cybercrminals new Tax refund SMS smighing scams targeting U.S statewide, related to Japanese CoGUI phishing Kits
+Title: Chinese cybercrminals new Tax refund SMS smishing scams targeting U.S Statewide, related to Japanese CoGUI phishing Kits
+Reference: 
 
 Overview
 
+
 Indicators & C2/domains
 
-ip addresses
+- Targets
+1. Florida
+2. Massachusetts
+3. Texas
+4. Minnesota
+5. Pennsylvania
+6. New Jersey
+7. Connecticut
+10. Ohio
+11. Alabama
+
+- ip addresses
 170.106.160.91
 
-Autonoumous Systems
+- Autonoumous Systems
 AS 132203 Tencent Building, Kejizhongyi Avenue
+AS 1335 CLOUDFLARENET
 
-Domains
+- Domains
 revenue.refutreo.cc
 phila.revebkjul.cc
 revenue.refufzvji.cc
@@ -195,8 +209,6 @@ comptroller.payflka.cc
 comptroller.payflkv.cc
 comptroller.payfmaxs.cc
 comptroller.payflkb.cc
-
-
 
 
 Detection Rule
