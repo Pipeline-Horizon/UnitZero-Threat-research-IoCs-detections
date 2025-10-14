@@ -1,13 +1,20 @@
 Date: 2025-10-13
 Author: Reyben T. Cortes
 Title: Chinese cybercrminals new Tax refund SMS smishing scams targeting U.S Statewide, related to Japanese CoGUI phishing Kits
-Reference: https://www.governor.ny.gov/news/governor-hochul-warns-against-scams-targeting-new-yorks-inflation-refund-initiative
+Reference: 
+https://www.governor.ny.gov/news/governor-hochul-warns-against-scams-targeting-new-yorks-inflation-refund-initiative
+https://www.governor.ny.gov/news/governor-hochul-announces-inflation-refund-checks-are-now-being-sent-82-million-new-york
+
+- Overview
+This is the new shift/evolution to the SMS E-Z Pass Fake toll smishing scams that began in early May-June 2024. On September 26, 2025
 
 
-Overview
 
+- Impact 
+1. SSN - Social Security Number
+2. 
 
-Indicators & C2/domains
+- Indicators & C2/domains
 
 - Targeted U.S States
 1. Florida
