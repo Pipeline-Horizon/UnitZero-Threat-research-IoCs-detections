@@ -16,5 +16,5 @@ New recent trick to lure and phish users using a Japanese phonetic lettering sys
 
 # Indicators
 
-SHA256
+SHA256 e
 
