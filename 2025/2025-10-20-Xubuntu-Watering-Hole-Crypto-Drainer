@@ -1,1 +1,35 @@
+Date: 2025-10-20
+Author: Reyben T. Cortes
+Title: Xubuntu Compromised Watering Hole Attack via Crypto Drainer Malware
+Reference: https://www.theregister.com/2025/10/20/xubuntu_website_compromised/
+
+# Overview
+Between October 16-19, the official website of Xubuntu[.]org served malicious crypto drainer malware
+containing a .zip file and tampered tos.txt (Terms of Service) file "2026" future dated. The iniital file is .iso
+dropping a .zip file instead. The malware implements anti-analysis techniques and persistence through changed registry
+keys. Interestingly the malware is written in C# using clibpoard funtion to hijack copied crypto wallets
+and returns with attacker controlled addresses.
+
+
+# Detection Rule:
+https://detections.ai/rules/019a0170-66b7-776b-9a2a-4877fe53c201
+
+
+# Impact 
+1. Financial: Crypto/bitcoin accounts
+3. Malware
+
+# Indicators
+
+SHA256
+38eaef9fee4585f112dd35d5108f9f3baa1977cb682a7068a90996f166c840f5 // qjrqar.exe
+afaebc6cf20f32ea0644f69c511a5da12f3b860f7d13b18500051830337965d7 // Stage 2 (elzvcf.exe)
+ec3a45882d8734fcff4a0b8654d702c6de8834b6532b821c083c1591a0217826 // Stage 1 (TestCompany.SafeDownloader.exe)
+0f59f553fcfac3cac07aa7986eac914be069a6dd407b2d9f761f11d3e865b4f6 // Malicious 
+4eeb4a1d56b38be699c9c379de5d7d4291f656b766ae21c43843af3ddf55d7e9 // CorporateDownloadTool.exe
+b09ec204f734363b8826027da5c818b0925ade50d1a645a44d04bb1c4d209a83 // Xubuntu_Multi_Download_Manager.zip
+bfaf3af21644ce06fb295c78e080477d9095cb185fcf164ce9cf066a9682b9f1 // tos.txt
+
+
+
 
