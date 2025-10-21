@@ -1,1 +1,20 @@
+Date: 2025-09-29
+Author: Reyben T. Cortes
+Title: The Hiragana trick ん, a Japanese phishing trick using Homoglyph attack
+Reference: https://www.theregister.com/2025/10/20/xubuntu_website_compromised/
+
+# Overview
+New recent trick to lure and phish users using a Japanese phonetic lettering system in the Hiragan known as Kana or "N" in Japanese  ん which looks like a slash in url. Instead of a suspicious fake domain the technique leverages  ん to make the fake domain look more legitimaate using normal slashes. A campaign leveraging this phishing trick was observed in 800+ fake crypto extensions phishing sites in a homoglyph attack containing malicious crypto extension installers. The malware attempts to steal credentials in browsers.
+
+
+# Detection Rule:
+
+
+# Impact 
+1. Financial: Crypto/bitcoin accounts
+3. Malware
+
+# Indicators
+
+SHA256
 
