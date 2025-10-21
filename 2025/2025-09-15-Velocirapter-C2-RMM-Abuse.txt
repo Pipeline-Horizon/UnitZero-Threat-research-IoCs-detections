@@ -1,4 +1,13 @@
-# 2025-09-15 (Monday): Velociraptor C2 Incident Response tool abused as an RMM tunneling under Visual Studio Code, detection to this campaign under unsigned Velociraptors, C2 domains, ip address, and the pivotting to unreported trojanized V2.msi installers including several other pirated/trojan Velociraptor programs
+Date: 2025-09-15
+Author: Reyben T. Cortes @ Pipeline Horizon, Unit Zero
+Title: Velociraptor C2 Incident Response tool abused as an RMM tunneling under Visual Studio Code
+Reference: https://news.sophos.com/en-us/2025/08/26/velociraptor-incident-response-tool-abused-for-remote-access/
+
+# Overview
+Threat actors have begun using new ways of abusing RMM - (Remote Managing Monitor) through the use of a legitimate Incident response tool known as Velociraptor C2, a complex tool that can be used maliciously as a C2 RMM for threat actors to pivot and move laterally across victim networks. 
+
+# Detection Rule
+https://detections.ai/share/rule/uSu0UMaK
 
 # INDICATORS
 
