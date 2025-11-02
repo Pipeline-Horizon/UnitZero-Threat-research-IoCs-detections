@@ -1,0 +1,197 @@
+
+
+
+
+// Name: WSUSss - CVE-2025-59287 WSUS Server Exploited Payloads & Attempted IPs
+// Author: Reyben T. Cortes @ Pipeline Horizon, Unit Zero
+// Date: 2025-10-31
+// Description: Detects CVE-2025-59287 exploitation via malicious HTTP POST to WSUS .asmx endpoints folllowing through the execution chain with observed malicious IPs exploit attempts and the following malicious dropped files.
+// Includes: PoC behavior (GetCookie + <AuthorizationCookie>), ysoserial, dropped payloads (x.ps1, qoq.ps1, elzvcf.exe)
+// Reference: https://www.huntress.com/blog/exploitation-of-windows-server-update-services-remote-code-execution-vulnerability
+//Technique: T1190 (Exploit Public-Facing App), T1059.001 (PowerShell)
+// False Positive Sensitivity: Low (with all IoCs) | Medium (without IP/hashes)
+
+let MaliciousIPs = dynamic([
+    "129.153.98.207" ,  // Attempted Exploit CVE-2025-59287
+    "177.93.11.110"  ,  // Attempted Exploit CVE-2025-59287
+    "130.185.118.247",  // External C2 Payload
+    "134.122.38.84"  ,  // External C2 Payload
+]);
+
+let MaliciousSHA256 = dynamic([
+    "e112df7c7848d9315e07f87c0b7e9728d100dfed40c2cf3fcab44ed9b00e9f00", // Known Reported... 
+    "96ad1146eb96877eab5942ae0736b82d8b5e2039a80d3d6932665c1a4c87dcf7", // __PSScriptPolicyTest_j0kafcsl.24p.psm1
+    "1c1ffb90cb15425132bfcfc33110466b1025c98c596b1d41ecd615baeacd64c7" //  Redacted.ps1 
+    "80d42c4f185f71b2100f946557136e8dc8e519acc531a8f0a5a416fd97efd49a", // Redacted.ps1
+    "f689ee9af94b00e9e3f0bb072b34caaf207f32dcb4f5782fc9ca351df9a06c97" // VT Score: 2 (nssm.exe)  
+    "763dada763449617ef33d2fa9131a6f67e6bd83cc72c830bc648f8c134312083" //  VT Score: 2 (java.exe)
+    "d2962cdb5ab4191b64efa61abead16313aa78676abe052954807ea4803a43a59", // Redacted.ps1
+    "07e3b08872d3e6f4849a3621937b2af4522c7c09a682d2391387c49a2fbcb402", // Redacted.ps1
+    "11bd2c9f9e2397c9a16e0990e4ed2cf0679498fe0fd418a3dfdac60b5c160ee5", // Redacted.sys / Redacted.exe
+    "91f71f655004eb5e2783a98f7556c5e0e58d4f438fd5d2dcdf9e522735cf09b9", // java.exe (malicious)
+    "946a87060e52f18074546993c20809b665797dd5b4907445e850b910d3988467",  // Redacted.ps1 
+]);
+
+let HuntressMD5 = dynamic([
+    "a0f65fcd3b22eb8b49b2a60e1a7dd31c"  // dcrsproxy.exe
+]);
+
+let MaliciousC2 = dynamic([
+    "130.185.118.247:9090/tomcaterror.bmppop",  // Staging C2 payload
+    "130.185.118.247:9090/lisence.shm",        // Staging C2 payload
+    "130.185.118.247:9090/nssm.exe",         // Staging C2 Payload
+    "41415ebedb.ddns.bypass.eu.org",        // Attempt Exploit CVE-2025-59287
+    "webhook.site",                        // Webhook C2 Exfiltration
+    ".digimg.store",                      // DNS beaconing
+    "royal-boat-*.qgtxtebl.workers.dev/v3.msi"  // MSI payload
+]);
+
+// 1. Detect Malicious HTTP POST to WSUS .asmx Endpoints
+let SuspiciousWSUS_POST = 
+W3CIISLog
+| where TimeGenerated > ago(7d)
+| where csMethod == "POST"
+| where sPort in (8530, 8531, 80, 443)  // Bitdefender: May use 80/443
+| where cIP in (MaliciousIPs)
+| where csUriStem matches regex @".*\.asmx$"
+| where csUriStem contains "ClientWebService" 
+     or csUriStem contains "ReportingWebService" 
+     or csUriStem contains "SimpleAuthWebService"
+     or csUriStem contains "ApiRemoting30"  // From Huntress: Additional endpoint
+| extend 
+    SOAPAction   = tostring(extract(@"SOAPAction:\s*""([^""]+)""", 1, csRequestHeaders)),
+    UserAgent    = csUserAgent,
+    RequestBody  = tostring(csRequestBody),
+    SourceIP     = cIP,
+    SourcePort   = csPort
+| where isnotempty(RequestBody)
+| extend 
+    HasAuthCookie = iff(RequestBody contains "<AuthorizationCookie>", true, false),
+    EncodedCookie = extract("<AuthorizationCookie>([A-Za-z0-9+/=]+)</AuthorizationCookie>", 1, RequestBody),
+    PayloadSize   = iff(isnotempty(EncodedCookie), strlen(base64_decode_tostring(EncodedCookie)), 0)
+| where HasAuthCookie == true
+   and PayloadSize > 100
+   and PayloadSize % 16 == 0
+   and SOAPAction contains "GetCookie"  // PoC exploit
+| project 
+    RequestTime, Computer, SourceIP, SourcePort, WSUS_Port = sPort, 
+    csUriStem, SOAPAction, UserAgent, EncodedCookie, PayloadSize
+| extend IsExploitAttempt = true;
+
+// 2. Correlate with Dropped Malicious Files dcrsproxy.exe, rcpkg.db
+SuspiciousWSUS_POST
+| join kind=leftouter (
+    DeviceFileEvents
+    | where TimeGenerated > ago(7d)
+    | where SHA256 in (MaliciousSHA256)
+       or MD5 in (HuntressMD5)  // Huntress/Bitdefender: MD5 for dcrsproxy.exe
+       or FileName in~ ("x.ps1", "qoq.ps1", "elzvcf.exe", "qcae5f.exe", "java.exe", "nssm.exe", "dcrsproxy.exe", "rcpkg.db")
+       or FolderPath contains "AppData\\Roaming"
+       or FolderPath contains "C:\\ProgramData"  // Huntress/Bitdefender: dcrsproxy.exe location
+    | extend 
+        DropTime = TimeGenerated,
+        DroppedFile = FileName,
+        FileHash = coalesce(SHA256, MD5),
+        FolderPath
+) on $left.Computer == $right.DeviceName
+| where isnull(DropTime) or (RequestTime <= DropTime and DropTime <= RequestTime + 30m)
+
+// 3. Correlate with ysoserial / PowerShell Activity
+| join kind=leftouter (
+    DeviceProcessEvents
+    | where TimeGenerated > ago(7d)
+    | where FileName in~ ("powershell.exe", "cmd.exe", "curl.exe")  // Huntress/Bitdefender: curl.exe for exfil
+    | where ProcessCommandLine matches regex @"ysoserial|github\.com.*pwntester|1dba9c4416ba6e79b6b262b758fa75e2ee9008e9"
+       or ProcessCommandLine contains "ysoserial_download.zip"
+       or ProcessCommandLine contains "Release"
+       or ProcessCommandLine contains "ysoserial.exe"
+       or ProcessCommandLine contains "x.ps1"
+       or ProcessCommandLine contains "qoq.ps1"
+       or ProcessCommandLine contains "run.ps1"
+       // Huntress/Bitdefender: Enumeration + Base64 PS + Downloads
+       or ProcessCommandLine has_any ("net user /domain", "ipconfig /all", "whoami", "powershell -ec", "curl.exe -k", "iwr -UseBasicParsing")
+       or ProcessCommandLine contains "(new-object System.Net.WebClient).DownloadFile"  // Downloads to 134.122.38.84
+       or ProcessCommandLine contains "msiexec /q /i"  // MSI installs from workers.dev
+       or ProcessCommandLine contains "nslookup wsus.ac.d189493a.digimg.store"  // DNS beaconing
+       or ProcessCommandLine contains "whoami | curl"  // Bitdefender: Recon exfil
+    // Process Chain: w3wp.exe/wsusservice.exe → cmd → cmd → PS
+    | join kind=inner (
+        DeviceProcessEvents
+        | where FileName in~ ("wsusservice.exe", "w3wp.exe")
+        | extend WSUS_ProcessId = ProcessId
+    ) on $left.InitiatingProcessId == $right.WSUS_ProcessId  // First cmd from WSUS
+    | join kind=inner (
+        DeviceProcessEvents
+        | where ProcessCommandLine has "cmd.exe"  // Second cmd
+        | extend SecondCmdId = ProcessId
+    ) on $left.InitiatingProcessId == $right.SecondCmdId
+    | where FileName == "powershell.exe"  // Final PS spawn (or curl/whoami)
+    | extend HuntressChain = true, BDChain = true
+    | extend 
+        YsoActivity = case(
+            ProcessCommandLine matches regex @"ysoserial.*\.zip", "Download_ysoserial",
+            ProcessCommandLine contains "Expand-Archive", "Extract_ysoserial",
+            ProcessCommandLine contains "ysoserial.exe", "Run_ysoserial",
+            ProcessCommandLine has_any ("net user /domain", "ipconfig /all", "whoami"), "Enumeration",
+            ProcessCommandLine contains "curl.exe -k" or ProcessCommandLine contains "iwr -UseBasicParsing" or ProcessCommandLine contains "whoami | curl", "Exfil",
+            ProcessCommandLine contains "DownloadFile", "Payload_Download",
+            ProcessCommandLine contains "msiexec /q /i", "MSI_Install",
+            ProcessCommandLine contains "nslookup wsus.ac", "DNS_Beacon",
+            "Ref_Payload_Script"
+        )
+) on $left.Computer == $right.DeviceName
+| where isnull(YsoActivity) or (RequestTime <= TimeGenerated and TimeGenerated <= RequestTime + 30m)
+
+// 4. Correlate with C2 / External Downloads
+| join kind=leftouter (
+    DeviceNetworkEvents
+    | where TimeGenerated > ago(7d)
+    | where RemoteUrl has_any (MaliciousC2)
+       or RemoteIP in (MaliciousIPs)
+       or RemotePort == 9090
+       or RemotePort in (80, 443, 8530, 8531)  // Exfil ports
+       or RemoteUrl has_any ("webhook.site", "digimg.store", "workers.dev")  // Exfil C2
+    | project NetTime = TimeGenerated, RemoteUrl, RemoteIP, RemotePort
+) on $left.Computer == $right.DeviceName
+| where isnull(NetTime) or (RequestTime <= NetTime and NetTime <= RequestTime + 60m)
+
+// Full Exploit Chain with All IoCs
+| extend 
+    DetectionStage = case(
+        IsExploitAttempt and BDChain and not(isempty(DroppedFile)) and not(isempty(YsoActivity)), "FULL_BD_CHAIN",
+        IsExploitAttempt and HuntressChain and not(isempty(DroppedFile)) and not(isempty(YsoActivity)), "FULL_HUNTRESS_CHAIN",
+        IsExploitAttempt and not(isempty(DroppedFile)) and not(isempty(YsoActivity)), "FULL_CHAIN",
+        IsExploitAttempt and (BDChain or HuntressChain), "POST_AND_CHAIN",
+        IsExploitAttempt and not(isempty(DroppedFile)), "POST_AND_DROP",
+        IsExploitAttempt, "POST_ONLY",
+        "FILE_ONLY"
+    ),
+    Severity = case(
+        DetectionStage contains "FULL_", "Critical",
+        DetectionStage == "POST_AND_CHAIN", "High",
+        DetectionStage == "POST_AND_DROP", "High",
+        DetectionStage == "POST_ONLY", "Medium",
+        "Low"
+    )
+| project 
+    DetectionStage,
+    Severity,
+    RequestTime,
+    DropTime,
+    DeviceName = Computer,
+    SourceIP,
+    WSUS_Port,
+    TargetEndpoint = csUriStem,
+    SOAPAction,
+    HasAuthCookie,
+    PayloadSize,
+    DroppedFile,
+    FileHash,
+    FolderPath,
+    YsoActivity,
+    HuntressChain,
+    BDChain,
+    RemoteUrl,
+    RemoteIP,
+    RemotePort
+| order by Severity desc, RequestTime desc
