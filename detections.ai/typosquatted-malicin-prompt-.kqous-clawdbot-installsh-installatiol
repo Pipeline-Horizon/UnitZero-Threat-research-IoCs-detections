@@ -1,0 +1,53 @@
+// Name: Typosquatting Malicious ClawdBot install.sh Installation Prompt 
+// Author: Reyben T. Cortes @ Pipeline Co, LTD | Threat Research Team Unit Zero
+// Date: 2026-02-01
+// Description: Detects the installation or execution of the OpenClawd AI assistant via multiple vectors, including PowerShell, shell scripts, package managers (npm, pnpm), and source code cloning (git). This activity may be legitimate but could also represent unauthorized software installation (Shadow IT).
+// References: https://x.com/mischavdburg/status/2017500389436715239
+// False Positive Sensitivity: Low, this is a captured the detection of a typosquatted domain installation script different from the official openclaw.ai installation.
+DeviceProcessEvents
+| where isnotempty(ProcessCommandLine) or isnotempty(InitiatingProcessSHA256)
+| where 
+    // Option 1: PowerShell download cradle (Windows)
+    (
+        ProcessCommandLine has "openclawd.ai/install.ps1" and 
+        ProcessCommandLine has_any ("iex", "Invoke-Expression")
+    )
+    or
+    // Option 2: Known malicious installer hash
+    (
+        InitiatingProcessSHA256 =~ "3b19cefc86d64c4d53ba6bb2e0d5e197d5493221665e73a1ac81dc3d8bcd597d"
+    )
+    or
+    // Option 3: Shell script download and execution (Linux/macOS)
+    (
+        ProcessCommandLine has "curl" and ProcessCommandLine has "openclawd.ai/install.sh" and ProcessCommandLine has "bash"
+    )
+    or
+    // Option 4: Package manager global installation (npm, pnpm)
+    (
+        ProcessCommandLine has_any ("npm", "pnpm") and
+        (ProcessCommandLine has " -g " or ProcessCommandLine has " --global ") and // Look for global flag
+        ProcessCommandLine has "openclawd" and
+        ProcessCommandLine has_any ("install", "i", "add")
+    )
+    or
+    // Option 5: Source code cloning via git
+    (
+        ProcessCommandLine has_any("git", "git.exe") and ProcessCommandLine has "clone" and ProcessCommandLine has "github.com/openclawd/openclawd.git"
+    )
+    or
+    // Option 6: Post-install or execution commands
+    (
+        (ProcessCommandLine has "openclawd" and ProcessCommandLine has "onboard") or
+        (ProcessCommandLine has_all ("pnpm", "run", "openclawd", "onboard"))
+    )
+| project
+    TimeGenerated,
+    DeviceName,
+    AccountName,
+    FileName,
+    ProcessCommandLine,
+    SHA256,
+    InitiatingProcessFileName,
+    InitiatingProcessCommandLine,
+    InitiatingProcessSHA256
